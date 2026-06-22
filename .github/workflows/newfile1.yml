@@ -29,9 +29,22 @@ jobs:
         run: mvn package
 
       - name: Install AWS CLI
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
+      - name: list all ec2 instances
         run: |
-          curl "https://amazonaws.com" -o "awscliv2.zip"
-          sudo apt-get update && sudo apt-get install unzip curl -y
-          unzip awscliv2.zip
-          sudo ./aws/install
-          aws --version # Verifies the installation in your runner logs
+          aws --version # Verifies the AWS CLI installation in your runner logs
+          aws ec2 describe-instances
+          
+
+      # - name: Install AWS CLI
+      #   run: |
+      #     curl "https://amazonaws.com" -o "awscliv2.zip"
+      #     sudo apt-get update && sudo apt-get install unzip curl -y
+      #     unzip awscliv2.zip
+      #     sudo ./aws/install
+      #     aws --version # Verifies the installation in your runner logs

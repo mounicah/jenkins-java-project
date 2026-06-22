@@ -1,0 +1,37 @@
+name: CI WORKFLOW
+
+on:
+  push:
+    branches: [ "master" ] # Triggers when you push to main. Change if your branch is named differently.
+
+jobs:
+  ci-job:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven' # Automatically caches your Maven dependencies to make builds faster
+
+      # NOTE: GitHub's Ubuntu runners already have Maven pre-installed. 
+      # We can immediately run your Maven lifecycles below.
+
+      - name: Build and Test
+        run: mvn clean test
+
+      - name: Create Artifact
+        run: mvn package
+
+      - name: Install AWS CLI
+        run: |
+          curl "https://amazonaws.com" -o "awscliv2.zip"
+          sudo apt-get update && sudo apt-get install unzip curl -y
+          unzip awscliv2.zip
+          sudo ./aws/install
+          aws --version # Verifies the installation in your runner logs
